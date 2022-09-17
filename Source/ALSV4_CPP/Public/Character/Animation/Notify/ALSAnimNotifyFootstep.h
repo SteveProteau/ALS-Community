@@ -74,5 +74,6 @@ public:
 	float PitchMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
-	bool bSpawnNiagara = false;
+	bool bSpawnNiagara = true;
 };
+
