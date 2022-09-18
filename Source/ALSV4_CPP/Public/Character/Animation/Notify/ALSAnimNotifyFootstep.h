@@ -3,7 +3,6 @@
 
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "Library/ALSCharacterEnumLibrary.h"
@@ -76,4 +75,3 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
 	bool bSpawnNiagara = true;
 };
-
