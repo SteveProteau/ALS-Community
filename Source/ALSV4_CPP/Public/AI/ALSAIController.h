@@ -18,7 +18,7 @@ class ALSV4_CPP_API AALSAIController : public AAIController
 	GENERATED_BODY()
 
 public:
-	AALSAIController();
+	AALSAIController(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> Behaviour = nullptr;

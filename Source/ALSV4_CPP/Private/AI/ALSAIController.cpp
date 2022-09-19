@@ -5,7 +5,8 @@
 
 #include "Character/ALSBaseCharacter.h"
 
-AALSAIController::AALSAIController()
+AALSAIController::AALSAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 }
 
