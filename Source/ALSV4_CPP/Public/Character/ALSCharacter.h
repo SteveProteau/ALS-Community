@@ -27,8 +27,8 @@ public:
 	void ClearHeldObject();
 
 	UFUNCTION(BlueprintCallable, Category = "ALS|HeldObject")
-	void AttachToHand(UStaticMesh* NewStaticMesh, USkeletalMesh* NewSkeletalMesh,
-	                  class UClass* NewAnimClass, bool bLeftHand, FVector Offset);
+	virtual void AttachToHand(UStaticMesh* NewStaticMesh, USkeletalMesh* NewSkeletalMesh,
+		class UClass* NewAnimClass, bool bLeftHand, FVector Offset);
 
 	virtual void RagdollStart() override;
 

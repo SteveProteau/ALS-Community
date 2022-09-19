@@ -58,13 +58,8 @@ void AALSCharacter::AttachToHand(UStaticMesh* NewStaticMesh, USkeletalMesh* NewS
 		AttachBone = TEXT("VB RHS_ik_hand_gun");
 	}
 
-	//AttachBone = TEXT("hand_r");
-
-	USkeletalMeshComponent* BodyMesh = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName(TEXT("Body")));
-
-	HeldObjectRoot->AttachToComponent(BodyMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachBone);
-	//HeldObjectRoot->AttachToComponent(GetMesh(),
-	//                                  FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachBone);
+	HeldObjectRoot->AttachToComponent(GetMesh(),
+	                                  FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachBone);
 	HeldObjectRoot->SetRelativeLocation(Offset);
 }
 
