@@ -24,12 +24,24 @@ void UALSAnimNotifyFootstep::PostLoad()
 	{
 		TArray<FALSHitFX*> HitFXRows;
 		HitDataTable->GetAllRows<FALSHitFX>(FString(), HitFXRows);
+		FStreamableManager& StreamableManager = UAssetManager::Get().GetStreamableManager();
 
-		for (auto row : HitFXRows)
+		for (FALSHitFX* Row : HitFXRows)
 		{
-			UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(row->Sound.ToSoftObjectPath(), [](){});
-			UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(row->NiagaraSystem.ToSoftObjectPath(), [](){});
-			UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(row->DecalMaterial.ToSoftObjectPath(), [](){});
+			if (Row->Sound.IsPending())
+			{
+				StreamableManager.RequestAsyncLoad(Row->Sound.ToSoftObjectPath(), [](){});
+			}
+
+			if (Row->NiagaraSystem.IsPending())
+			{
+				StreamableManager.RequestAsyncLoad(Row->NiagaraSystem.ToSoftObjectPath(), [](){});
+			}
+
+			if (Row->DecalMaterial.IsPending())
+			{
+				StreamableManager.RequestAsyncLoad(Row->DecalMaterial.ToSoftObjectPath(), [](){});
+			}
 		}
 	}
 }
@@ -360,8 +372,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				return;
 			}
 
-			//if (bSpawnSound && HitFX->Sound.LoadSynchronous())
-			if (bSpawnSound && HitFX->Sound.IsValid())
+			if (bSpawnSound && HitFX->Sound.LoadSynchronous())
 			{
 				UAudioComponent* SpawnedSound = nullptr;
 
@@ -394,8 +405,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				}
 			}
 
-			//if (bSpawnNiagara && HitFX->NiagaraSystem.LoadSynchronous())
-			if (bSpawnNiagara && HitFX->NiagaraSystem.IsValid())
+			if (bSpawnNiagara && HitFX->NiagaraSystem.LoadSynchronous())
 			{
 				UNiagaraComponent* SpawnedParticle = nullptr;
 				const FVector Location = HitLocation + MeshOwner->GetTransform().TransformVector(
@@ -424,8 +434,8 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				}
 			}
 
-			//if (bSpawnDecal && HitFX->DecalMaterial.LoadSynchronous())
-			if (bSpawnDecal && HitFX->DecalMaterial.IsValid())
+			if (bSpawnDecal && HitFX->DecalMaterial.LoadSynchronous())
+			//if (bSpawnDecal && HitFX->DecalMaterial.IsValid())
 			{
 				const FVector Location = HitLocation + MeshOwner->GetTransform().TransformVector(
 					HitFX->DecalLocationOffset);
