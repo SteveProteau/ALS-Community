@@ -13,6 +13,27 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
+#include "Engine/AssetManager.h"
+
+void UALSAnimNotifyFootstep::PostLoad()
+{
+	Super::PostLoad();
+
+	// Preload footstep assets asynchronously
+	if (HitDataTable)
+	{
+		TArray<FALSHitFX*> HitFXRows;
+		HitDataTable->GetAllRows<FALSHitFX>(FString(), HitFXRows);
+
+		for (auto row : HitFXRows)
+		{
+			UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(row->Sound.ToSoftObjectPath(), [](){});
+			UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(row->NiagaraSystem.ToSoftObjectPath(), [](){});
+			UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(row->DecalMaterial.ToSoftObjectPath(), [](){});
+		}
+	}
+}
+
 
 const FName NAME_Mask_FootstepSound(TEXT("Mask_FootstepSound"));
 
@@ -339,7 +360,8 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				return;
 			}
 
-			if (bSpawnSound && HitFX->Sound.LoadSynchronous())
+			//if (bSpawnSound && HitFX->Sound.LoadSynchronous())
+			if (bSpawnSound && HitFX->Sound.IsValid())
 			{
 				UAudioComponent* SpawnedSound = nullptr;
 
@@ -372,7 +394,8 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				}
 			}
 
-			if (bSpawnNiagara && HitFX->NiagaraSystem.LoadSynchronous())
+			//if (bSpawnNiagara && HitFX->NiagaraSystem.LoadSynchronous())
+			if (bSpawnNiagara && HitFX->NiagaraSystem.IsValid())
 			{
 				UNiagaraComponent* SpawnedParticle = nullptr;
 				const FVector Location = HitLocation + MeshOwner->GetTransform().TransformVector(
@@ -401,7 +424,8 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 				}
 			}
 
-			if (bSpawnDecal && HitFX->DecalMaterial.LoadSynchronous())
+			//if (bSpawnDecal && HitFX->DecalMaterial.LoadSynchronous())
+			if (bSpawnDecal && HitFX->DecalMaterial.IsValid())
 			{
 				const FVector Location = HitLocation + MeshOwner->GetTransform().TransformVector(
 					HitFX->DecalLocationOffset);
