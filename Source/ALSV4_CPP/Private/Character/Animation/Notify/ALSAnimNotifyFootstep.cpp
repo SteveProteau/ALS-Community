@@ -13,6 +13,39 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
+#include "Engine/AssetManager.h"
+
+void UALSAnimNotifyFootstep::PostLoad()
+{
+	Super::PostLoad();
+
+	// Preload footstep assets asynchronously
+	if (HitDataTable)
+	{
+		TArray<FALSHitFX*> HitFXRows;
+		HitDataTable->GetAllRows<FALSHitFX>(FString(), HitFXRows);
+		FStreamableManager& StreamableManager = UAssetManager::Get().GetStreamableManager();
+
+		for (FALSHitFX* Row : HitFXRows)
+		{
+			if (Row->Sound.IsPending())
+			{
+				StreamableManager.RequestAsyncLoad(Row->Sound.ToSoftObjectPath(), [](){});
+			}
+
+			if (Row->NiagaraSystem.IsPending())
+			{
+				StreamableManager.RequestAsyncLoad(Row->NiagaraSystem.ToSoftObjectPath(), [](){});
+			}
+
+			if (Row->DecalMaterial.IsPending())
+			{
+				StreamableManager.RequestAsyncLoad(Row->DecalMaterial.ToSoftObjectPath(), [](){});
+			}
+		}
+	}
+}
+
 
 const FName NAME_Mask_FootstepSound(TEXT("Mask_FootstepSound"));
 
@@ -402,6 +435,7 @@ void UALSAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 			}
 
 			if (bSpawnDecal && HitFX->DecalMaterial.LoadSynchronous())
+			//if (bSpawnDecal && HitFX->DecalMaterial.IsValid())
 			{
 				const FVector Location = HitLocation + MeshOwner->GetTransform().TransformVector(
 					HitFX->DecalLocationOffset);
